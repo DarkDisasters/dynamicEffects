@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src = {{static_url("./lib/d3_v3.js")}}></script>
+        <script src = {{static_url("./src/js/fisheye.js")}}></script>
+        <script src = {{static_url("./src/js/gd.js")}}></script>
+    </head>
+    <body>
+        <div id = "mydiv">
+            <svg id = "mysvg" width = '800' height = "800"></svg>
+        </div>
+            
+        <script>
+
+        var svg = d3.select("#mysvg")
+    
+        var lineFunction = d3.svg.line()
+              .x(function(d) { return d.x; })
+              .y(function(d) { return d.y; })
+              
+
+        //data of line, triangle and polygon
+        var data = [ 
+            { "x": 1,   "y": 5},  
+            { "x": 20,  "y": 20},
+            { "x": 40,  "y": 10}, 
+            { "x": 60,  "y": 40},
+            { "x": 80,  "y": 5},  
+            { "x": 100, "y": 60}
+        ];
+
+        var data2 = [
+          {'x': 20, 'y': 20},
+          {'x': 70, 'y': 70},
+          {'x': 55, 'y': 110},
+          {'x': 25, 'y': 80},
+          {'x': 1, 'y': 105},
+          {'x': 10, 'y': 70},
+          {'x': 20, 'y': 20},
+        ]
+
+        var data3 = [
+          {'x': 70, "y": 10},
+          {'x': 110, 'y': 70},
+          {'x': 10, 'y': 80},
+          {'x': 70, 'y': 10},
+        ]
+
+        var linegraph = svg.append("path")
+            .attr("data",function(){ 
+                var linedata = data
+                return JSON.stringify(data)
+                })
+            .attr("d", lineFunction(data))
+            .attr("transform", "translate(70,70)")
+            .attr("stroke", "#F0B137")
+            .attr("stroke-width", 2)
+            .style("fill", "none")
+            .style("effect", function(){
+                geometryDeformation(d3.select(this), [51,24], 50, 0.6)
+            });
+
+        var multigraph = svg.append("path")
+            .attr("d", lineFunction(data2))
+            .attr("transform", "translate(400,250)")
+            .style("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "#88936E")
+            .style("effect", function(){
+                geometryDeformation(d3.select(this), [40,70], 70, 1.0)
+            });
+
+        var trianglegraph = svg.append("path")
+            .attr("d", lineFunction(data3))
+            .attr("transform", "translate(600,200)")
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .style("fill", "#EA4C22")
+            .style("effect", function(){
+                geometryDeformation(d3.select(this), [60,45], 70, 0.6)
+            });
+
+        </script>
+    </body>
+</html>

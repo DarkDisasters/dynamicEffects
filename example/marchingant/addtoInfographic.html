@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <style>
+            svg{
+                position:absolute;
+                left:0px;
+                top:0px;
+                z-index: -1;
+            }
+            canvas{
+                position:absolute;
+                left:0px;
+                top:0px;
+            }
+        </style>
+
+    </head>
+    <body>
+        <script src = "{{static_url('./lib/EventEmitter.js')}} "></script>
+        <script src = "{{static_url('./lib/jquery.js')}}"></script>
+        <script src = "{{static_url('./lib/jscolor.min.js')}} "></script>
+        <script src = "{{static_url('./lib/paper-full.js')}} "></script>
+        <script src = "{{static_url('./lib/d3.js')}} "></script>
+        <script src = "{{static_url('./src/js/boxplot.js')}}"></script>
+        <script src = "{{static_url('./src/js/marchingants.js')}}"></script>
+
+
+        <svg width = "800" height = "800">
+            <rect x = "0" y = "0" width = "350" height = "80" style = "fill:#D2E2F7;"></rect>
+        </svg>
+
+        <canvas id = "mycanvas" width = "800" height="800">
+        </canvas>
+
+        <script>
+            function addAnttoSvg(){
+
+                var canvas = document.getElementsByTagName("canvas")[0];
+
+                var antPoints = []
+
+                paper.setup(canvas);
+                paper.install(window);
+
+                paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
+
+                    console.log("item",item)
+
+                    antModal = item._children[1]
+                    console.log("antModal", antModal)
+                
+                    var groupId = "1"
+                    var path = [[300,300],[360,300]]
+                    var boundary = [[0,3],[350,3],[350,800],[0,800]]
+
+                    var speed = 25
+                    var space = 40
+                    var color = "#01718C"
+
+                    MA_Start()
+                    marchingAnt(antModal, path, boundary, speed, space, groupId, color, true)
+                    MA_End()
+                })
+            }
+        </script>
+
+        <script>
+            addAnttoSvg()
+        </script>
+    </body>
+</html>
