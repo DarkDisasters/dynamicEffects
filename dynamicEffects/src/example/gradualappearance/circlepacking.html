@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div class='rightdiv'>
+            <svg width="600" height="600"></svg>
+        </div>
+        <script src = "{{static_url('./lib/d3.js')}}"></script>
+
+        <script src = "{{static_url('./src/js/ga.js')}}"></script>
+
+        <script>
+            var maxdepth = -1
+            var leaveDepthMap = {};
+            var intervalStepNum = 1;
+            var loopIndex = 0;
+            var forwardStep = 0
+            var svg = d3.select(".rightdiv svg")
+            var diameter = svg.attr("width"),
+                margin = 10,
+                g = svg.append("g").attr("transform","translate(" + diameter/2 + "," + diameter/2 + ")")
+
+            var color = d3.scaleLinear()
+                        .domain([-1,5])
+                        .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                        .interpolate(d3.interpolateHcl)
+
+            var pack = d3.pack()
+                        .size([diameter - margin, diameter - margin])
+
+            d3.json("{{static_url('./data/flare.json')}}", function(error, root){
+                if(error) throw error
+
+                //Construct structure of hierarchy according to JSON file
+                root = d3.hierarchy(root)
+                        .sum(function(d){ return d.size})
+                        .sort(function(a,b){
+                            return b.value - a.value
+                        } )
+
+                var nodes = pack(root).descendants()
+
+                if(maxdepth == -1){
+                    for(var i = 0; i < nodes.length; i++){
+                        if(maxdepth < nodes[i].depth){
+                            maxdepth = nodes[i].depth
+                        }
+                        if(!nodes[i].children){
+                            leaveDepthMap[nodes[i].depth] = 1;
+                        }
+                    }
+                }
+
+                function zoomTo(v){
+                    var k = diameter / v[2]
+
+                    d3.selectAll("circle")
+                        .attr("transform", function(d){
+                            return "translate(" + (d.x - v[0])*k + "," + (d.y - v[1])*k + ")" ;
+                        })
+                        .attr("r", function(d){ return d.r * k; })
+                }
+
+                //Append circle and add effects to each circles
+                var circleg = g.selectAll("circle")
+                    .data(nodes)
+                    .enter()
+                    .append("circle")
+                    .attr("class", function(d){
+                        return (d.parent ? d.children ? "nodes" : "node node--leaf" : "node node--root")
+                    })
+                    .attr("depth", function(d){
+                        return d.depth;
+                    })
+                    .style("fill", function(d){
+                        return color(d.depth)
+                    })
+                    .style('stroke-dasharray', '2 2')
+                    .style('stroke-width', '1.5px')
+                    .attr("effect", function(d){
+                        GA_Loop()
+                        gradualAppearance(d3.select(this), d.depth - 1, (maxdepth-d.depth+1), 1)
+                        return 1;
+                    })
+                zoomTo([root.x, root.y, root.r * 2 + margin])
+            })
+        </script>
+    </body>
+</html>

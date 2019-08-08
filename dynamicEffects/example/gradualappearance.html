@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+        form {
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        svg {
+          font: 10px sans-serif;
+        }
+        </style>
+    </head>
+    <body>
+        
+        <svg id = "coversvg" width="700" height="570">
+        </svg>
+
+
+        <script src="../lib/d3.js"></script>
+        <script src="../src/js/ga.js"></script>
+
+        <script>
+
+          function drawTreeMapLight(){
+
+            var repetition = 9, speed = 25
+            var shadow_width = 2;
+            var svg = d3.select("svg")
+
+            //Add effect of GA to rect
+            svg.append("rect")
+              .attr("x", 100)
+              .attr("y", 100)
+              .attr("width", 150)
+              .attr("height", 150)
+              .attr('class', 'treecoverrect_new')
+              .style('fill', function(d){
+                return '#EA4C22'
+              })              
+              .style('stroke-width', '2.5px')
+              .style("stroke", "#2472EB")
+              .style('display', function(d){
+                return 'block'
+              })
+              .style('effect', function(d){
+                  // gradualAppearance (Visual_Proxy, Offset, Repetition, Speed)
+                  gradualAppearance(d3.select(this), 2, repetition, speed)
+              })
+
+                
+            }
+
+            drawTreeMapLight()
+        </script>
+        
+    </body>
+</html>

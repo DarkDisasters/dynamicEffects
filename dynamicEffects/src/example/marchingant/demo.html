@@ -1,0 +1,78 @@
+<html>
+	<head>
+
+        <script src = "{{static_url('./lib/jquery.js')}}"></script>
+		<script src = "{{static_url('./lib/d3.js')}}"></script>
+        <script src = "{{static_url('./lib/paper-full.js')}} "></script>
+        <script src = "{{static_url('./src/js/marchingants.js')}}"></script>
+	</head>
+    <style>
+        svg{
+        	position:absolute;
+        	left:0px;
+        	top:0px;
+        	z-index: -1;
+        }
+        canvas{
+        	position:absolute;
+        	left:0px;
+        	top:0px;
+        }
+    </style>
+	<body>
+       	<canvas id = "mycanvas" width="800" height="600" display=" inline"></canvas>
+		<div>
+			<svg id="mysvg" width="800" height="600" >
+				<rect id="rect1" x="100" y="100" style="fill: #AF503E;" width="80" height="200"></rect>
+
+                <rect id = "rect2" x = "300" y = "100" style= "fill:#AF503E;" width="80" height = "200">
+			</svg>
+		</div>
+	</body>
+	<script type="text/javascript">
+
+		var canvas = document.getElementById('mycanvas');
+
+        paper.setup(canvas);
+        paper.install(window);
+        paper.view.draw();
+
+		// [1] add MA
+		var rectBox = document.getElementById('rect1').getBoundingClientRect();
+		var visual_proxy = [
+			[rectBox.x, rectBox.y + rectBox.height],
+            [rectBox.x + rectBox.width * 0.5, rectBox.y + rectBox.height - 13],
+			[rectBox.x + rectBox.width, rectBox.y + rectBox.height],
+			[rectBox.x + rectBox.width, rectBox.y + rectBox.height + 10],
+            [rectBox.x + rectBox.width * 0.5, rectBox.y + rectBox.height-3],
+			[rectBox.x, rectBox.y + rectBox.height + 10],
+			[rectBox.x, rectBox.y + rectBox.height],
+		]
+		console.log('visual_proxy', visual_proxy)
+		var path = [
+			[rectBox.x + rectBox.width * 0.5, rectBox.y + rectBox.height],
+			[rectBox.x + rectBox.width * 0.5, rectBox.y],
+		]
+		console.log('path', path)
+		var boundary = [
+			[rectBox.x, rectBox.y], 
+			[rectBox.x + rectBox.width, rectBox.y], 
+			[rectBox.x + rectBox.width, rectBox.y + rectBox.height],
+			[rectBox.x, rectBox.y + rectBox.height],
+			[rectBox.x, rectBox.y], 
+		]
+		console.log('boundary', boundary)
+		var speed = 23
+		var space = 20
+		var color = '#F9DEB3'
+		//object to add dynamic effect
+
+		// var visual_proxy = [[100, 300], [300, 350], [100, 200]]
+		// var path = []
+		MA_Start()
+        
+		marchingAnt(visual_proxy, path, boundary, speed, space, 1, color, false)
+		
+        MA_End();
+	</script>
+</html>

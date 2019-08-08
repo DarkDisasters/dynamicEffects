@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            svg{position:absolute;left:0px;top:0px;z-index: -1;}
+            canvas{position:absolute;left:0px;top:0px;}
+        </style>
+    </head>
+    <body>
+
+        <script src = "{{static_url('./lib/EventEmitter.js')}} "></script>
+        <script src = "{{static_url('./lib/jquery.js')}}"></script>
+        <script src = "{{static_url('./lib/jscolor.min.js')}} "></script>
+        <script src = "{{static_url('./lib/paper-full.js')}} "></script>
+        <script src = "{{static_url('./lib/d3.js')}} "></script>
+        <script src = "{{static_url('./src/js/boxplot.js')}}"></script>
+        <script src = "{{static_url('./src/js/marchingants.js')}}"></script>
+
+        <canvas id = "mycanvas" width="800" height="600" display=" inline"></canvas>
+
+        <div>
+            <svg  id="drawsvg">
+                <rect id="rect1" x="100" y="100" style="fill: #EA4C22;" width="80" height="200"></rect>
+            </svg>
+        </div>
+
+        <script>
+
+            //Deal with the array of ant called antDots
+            function autoBoxplotMA(){
+                var exampleGroup = {};
+                var maGroupMap = {};
+                var antDots = [
+                    [110,387], 
+                    [129,399], 
+                    [129,405],    
+                    [110,393], 
+                    [92,404], 
+                    [91,400], 
+                    [110,387]
+                ] 
+
+                var mapMaInfo = {};
+                var mapMaList = {};
+
+                d3.selectAll('.boxplot')
+                    .each(function(d, i){
+                
+                        var box = d3.select(this).select('.box')
+                        var data = JSON.parse(d3.select(this).attr('data'))
+                        console.log(" data ", data);
+                        var width = +box.attr('width'), height = +box.attr('height')
+                        var mline = d3.select(this).select('.mline');
+                        var top = (margin.top + (+box.attr('y')));
+                        var middlepos = [ d3.select(this).node().getBoundingClientRect().left + (+mline.attr('x1') + width * 0.5),  (margin.top + (+mline.attr('y1')))];
+
+                        console.log("**************")
+                        console.log(' boxplot ', d3.select(this).attr('groupid'));
+                        console.log("box", box)
+                        console.log("middlepos", middlepos)
+
+                        //upper 
+                        var upperma = {};
+                        var upppermainfo = {};
+
+                        upppermainfo = {
+                          "ae" : "MA",
+                          "antcolor" : "#ffffff63",
+                          "antshape" : "self-defined",
+                          "antgap" : 10,
+                          "antinterval" : 2 + Math.pow((data.q3 - data.median - 3), 2),
+                        }
+
+                        upperma['path'] = {
+                          dots: [middlepos, [middlepos[0], top]]
+                        }
+
+                        upperma['boundary'] = {
+                          dots: [[middlepos[0] - width/2., top], [middlepos[0] + width/2., top],
+                                 [middlepos[0] + width/2., middlepos[1]], [middlepos[0] - width/2., middlepos[1]], [middlepos[0] - width/2., top]]
+                        }
+
+                        upppermainfo['groupid'] = d3.select(this).attr('groupid') + '-up'
+                        mapMaInfo[upppermainfo['groupid']] = (upppermainfo);
+                        mapMaList[upppermainfo['groupid']] = [upperma]
+
+                        var bottomma = {};
+                        var bottommainfo = {};
+
+                        bottommainfo = {
+                          "ae" : "MA",
+                          "antcolor" : "#ffffff63",
+                          "antshape" : "self-defined",
+                          "antgap" : 10,
+                          "antinterval" : 2 + Math.pow((data.median - data.q1 - 3), 2)
+                        }
+
+                        bottomma['path'] = {
+                          dots: [middlepos, [middlepos[0], top + height]]
+                        }
+
+                        bottomma['boundary'] = {
+                          dots: [[middlepos[0] - width/2., middlepos[1]], [middlepos[0] + width/2., middlepos[1]],
+                                 [middlepos[0] + width/2., top + height], [middlepos[0] - width/2., top + height]]
+                        }
+
+                        bottommainfo['groupid'] = d3.select(this).attr('groupid') + '-bo'    
+                        mapMaInfo[bottommainfo['groupid']] = (bottommainfo);
+                        mapMaList[bottommainfo['groupid']] = [bottomma]
+                    })
+
+                    console.log(' liMaInfo ', mapMaInfo);
+                    console.log(' mapMaList ', mapMaList);
+                    var liGroupId = Object.keys(mapMaInfo);
+                    for(var i = 0; i < liGroupId.length; i ++){
+                        var groupid = liGroupId[i];
+                        maGroupMap[groupid]  = {
+                            'mainfo': mapMaInfo[groupid],
+                            'malist': mapMaList[groupid],
+                        }
+                    }
+                    return {'antdots': antDots, 'groups': maGroupMap};
+            }
+
+            function createPath(liDot, closed){
+                var path = new paper.Path();
+
+                // path.strokeColor = 'black';
+                for(var i = 0; i < liDot.length; i ++)
+                    path.add(new Point(liDot[i]))
+                path.closed = closed;
+                return path;
+            }
+
+            //obtain the data of ants from function autoBoxplotMA(), and collate the data into a form that is called by API
+            boxplot = function(){
+                var point 
+                var imgWidth, imgHeight;
+                var largeScreenSizeSetting = {width: 1020, height: 720}
+                var smallScreenSizeSetting = {width: 800, height: 600}
+
+                imgWidth = smallScreenSizeSetting.width
+                imgHeight = smallScreenSizeSetting.height
+
+                var _svg = d3.selectAll('svg')
+                .attr('width', imgWidth)
+                .attr('height', imgHeight);
+
+                console.log(' canvas width ', imgWidth, imgHeight);
+
+                canvas1 = document.getElementsByTagName("canvas")
+
+                var canvas = document.getElementById(canvas1[0].id);
+                console.log("id",canvas1[0].id)
+                console.log("canvas1",canvas1)
+                console.log("canvas", canvas1[0].getBoundingClientRect())
+                // Create an empty project and a view for the canvas:
+                paper.setup(canvas);
+                paper.install(window);
+                paper.view.draw();
+
+                drawBoxplot();
+                var result = autoBoxplotMA();
+                var allGroupMap = result['groups']
+                var antDots = result['antdots']
+                var liGroupId = Object.keys(allGroupMap)
+
+                // Limit. Ensure the normal operation of the marchingant
+                MA_Start()
+
+                for(var i = 0; i < liGroupId.length; i ++){
+                    // if(i == liGroupId.length-1){
+                    //     //Same effect as MA_Start()
+                    //     MA_End();
+                    // }
+
+                    var groupId = liGroupId[i]
+                    var tempGroup = allGroupMap[groupId]
+                    var aeInfo = tempGroup["mainfo"]
+                    var malist = tempGroup["malist"]
+                    speed = aeInfo["antinterval"]
+                    space = aeInfo["antgap"]
+                    color = aeInfo["antcolor"]
+
+                    ant = createPath(antDots,true)
+                    path = malist[0]["path"]["dots"]
+                    boundary = malist[0]["boundary"]["dots"]
+
+                    console.log("boxplot ant", ant)
+                    console.log("boundary", boundary)
+                    marchingAnt(ant, path, boundary, speed, space, groupId, color, true)
+
+                    if(i == liGroupId.length){
+                        paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
+
+                            console.log("item",item)
+
+                            antModal = item._children[1]
+                            console.log("antModal", antModal)
+                        
+                            var groupId3 = "14"
+                            var path3 = [[300,300],[360,300]]
+                            var boundary3 = [[0,3],[350,3],[350,800],[0,800]]
+                            var speed3 = 25
+                            var space3 = 40
+                            var color3 = "#01718C"
+
+                            
+                            marchingAnt(antModal, path3, boundary3, speed3, space3, groupId3, color3, true)
+                        })    
+                    }
+                }
+
+                paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
+
+                    console.log("item",item)
+
+                    antModal = item._children[1]
+                    console.log("antModal", antModal)
+                
+                    var groupId3 = "14"
+                    var path3 = [[300,300],[360,300]]
+                    var boundary3 = [[0,3],[350,3],[350,800],[0,800]]
+                    var speed3 = 25
+                    var space3 = 40
+                    var color3 = "#01718C"
+
+                    marchingAnt(antModal, path3, boundary3, speed3, space3, groupId3, color3, true)
+                })    
+                // var rectBox = document.getElementById('rect1').getBoundingClientRect();
+                // var deltaX = 0
+                // var visual_proxy2 = [
+                //     [rectBox.x + deltaX, rectBox.y + rectBox.height],
+                //     [rectBox.x + rectBox.width * 0.5 + deltaX, rectBox.y + rectBox.height - 13],
+                //     [rectBox.x + rectBox.width + deltaX, rectBox.y + rectBox.height],
+                //     [rectBox.x + rectBox.width + deltaX, rectBox.y + rectBox.height + 10],
+                //     [rectBox.x + rectBox.width * 0.5 + deltaX, rectBox.y + rectBox.height-3],
+                //     [rectBox.x + deltaX, rectBox.y + rectBox.height + 10],
+                //     [rectBox.x + deltaX, rectBox.y + rectBox.height],
+                // ]
+                // var path2 = [
+                //     [rectBox.x + rectBox.width * 0.5 , rectBox.y + rectBox.height],
+                //     [rectBox.x + rectBox.width * 0.5 , rectBox.y]
+                // ]
+                // // console.log(' visual_proxy ', visual_proxy, 'path', path);
+
+                // var boundary2 = [
+                //     [rectBox.x, rectBox.y], 
+                //     [rectBox.x + rectBox.width, rectBox.y], 
+                //     [rectBox.x + rectBox.width, rectBox.y + rectBox.height],
+                //     [rectBox.x, rectBox.y + rectBox.height],
+                //     [rectBox.x, rectBox.y], 
+                // ]
+
+                // var speed2 = 30
+                // var space2 = 30
+                // var color2 = '#F9DEB3'
+                // var groupId2 = 1
+
+                // marchingAnt(visual_proxy2, path2, boundary2, speed2, space2, groupId2, "#000000")
+                MA_End()
+            
+            }
+        </script>
+
+        <script>
+            //Call the API marchingant to handle the ant that the information is defined by ourself in this function
+            boxplot()
+        </script>
+    </body>
+</html>

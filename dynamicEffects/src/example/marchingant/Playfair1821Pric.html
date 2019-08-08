@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            div{position:absolute;left:6px;top:0px;z-index: -1;}
+            canvas{position:absolute;left:0px;top:0px;}
+        </style>
+    </head>
+    <body>
+        <script src = "{{static_url('./lib/EventEmitter.js')}} "></script>
+        <script src = "{{static_url('./lib/jquery.js')}}"></script>
+        <script src = "{{static_url('./lib/jscolor.min.js')}} "></script>
+        <script src = "{{static_url('./lib/paper-full.js')}} "></script>
+        <script src = "{{static_url('./lib/d3.js')}} "></script>
+        <script src = "{{static_url('./src/js/marchingants.js')}}"></script>
+
+        <canvas id = "aecanvas" width="800" height="800" display=" inline"></canvas>
+        <div id = "divcircos" width="800" height="800">
+            <img src = "{{static_url('./img/Playfair1821Pric.png')}}" style="width: 1200px"></img>
+        </div>
+        
+        <script>
+            loadMa("{{static_url('./data/Playfair1821Pric.json')}}", "aecanvas")
+        </script>
+        
+    </body>
+</html>
