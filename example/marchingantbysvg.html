@@ -16,15 +16,58 @@
     <canvas id = "mycanvas" width = "800" height="800">
     </canvas>
 
-    <script>
+    <input type="button" value="生成path" onclick="getPath()">
+    <input type="button" value="生成效果" onclick="addAnttoSvg()">
+    <script >
+        var canvas = document.getElementsByTagName("canvas")[0];
+
+        var antPoints = []
+
+        paper.setup(canvas);
+        paper.install(window);
+        var pathp = []
+        var pathPoints = []
+
+        function getPath(){
+            var path;
+            
+            var tool1 = new Tool()
+
+            tool1.minDistance = 30;
+
+            tool1.onMouseDown = function(event){
+            // function onMouseDown(event){
+                console.log('aaaaa')
+                if (path){
+                    path.selected = false;
+                }
+
+                path = new paper.Path();
+                path.strokeColor = 'black'
+                path.fullySelected = true;
+            }
+
+            tool1.onMouseDrag = function(event){
+                console.log('aaa')
+                path.add(event.point)
+                pathPoints.push(event.point)
+                
+            }
+
+            tool1.onMouseUp = function(event){
+                var segmentCount = path.segments.length;
+                // path.smooth();
+                console.log('path', path.segments)
+                console.log('pathpoints', pathPoints)
+                path.fullySelected = true;
+                var newSegmentCount = path.segments.length;
+                var difference = segmentCount - newSegmentCount;
+                var percentage = 100 - Math.round(newSegmentCount / segmentCount * 100)
+
+            }
+        }
+
         function addAnttoSvg(){
-
-            var canvas = document.getElementsByTagName("canvas")[0];
-
-            var antPoints = []
-
-            paper.setup(canvas);
-            paper.install(window);
 
             // paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
             paper.project.importSVG('../svg/rightarrow.svg', function(item){
@@ -35,15 +78,26 @@
                 // antModal.visible = false;
                 console.log("children", item._children)
                 console.log("childrenlength", item._children.length)
+                console.log('pathpoint', pathPoints)
                 // antModal.segments.forEach(function(d){
                 //     // console.log("aaa",d)
                 //  antPoints.push([d.point.x, d.point.y])
                 // })
 
-                var groupId = "1"
-                var path = [[3,33],[360,33]]
-                var boundary = [[0,3],[350,3],[350,77],[0,77]]
+                for(var i = 0; i < pathPoints.length; i++){
+                    var pointoridinate = []
+                    pointoridinate.push(pathPoints[i]['x'])
+                    pointoridinate.push(pathPoints[i]['y'])
+                    pathp.push(pointoridinate)
+                }
 
+                
+                var groupId = "1"
+                console.log('path1', pathp)
+                // pathp = [[3,33],[360,33], [400,100]]
+                // var boundary = [[0,3],[350,3],[350,77],[0,77]]
+                var boundary = [[0,0], [800,0], [800,800], [0,800]]
+                console.log('path2', pathp)
                 var speed = 25
                 var space = 40
                 var color = "#00964e"
@@ -53,11 +107,11 @@
                 //     console.log('aaaaa')
                 //     marchingAnt2(antModal2, path, boundary, speed, space, groupId, color)
                 // }
-                marchingAnt2(antModal, path, boundary, speed, space, color)
+                marchingAnt2(antModal, pathp, boundary, speed, space, color)
                 MA_End()
             })
         }
     </script>
-    <script>addAnttoSvg()</script>
+   
 </body>
 </html>
