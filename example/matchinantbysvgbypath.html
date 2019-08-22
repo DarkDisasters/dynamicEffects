@@ -67,66 +67,82 @@
             }
         }
 
-        function firstPointTransform(){
-            var firstPathPoint = pathp[0]
-
-        }
-
         function addAnttoSvg(){
-
+          
             // paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
             paper.project.importSVG('../svg/rightarrow.svg', function(item){
                 console.log("item",item)
 
                 antModal = item._children[1]._children[0]
-                var firstSegment = []
-                firstSegment.push(antModal.segments[0].point._x)
-                firstSegment.push(antModal.segments[0].point._y)
-                var tx = pathPoints[0]['x'] - firstSegment[0]
-                var ty = pathPoints[0]['y'] - firstSegment[1]
-                console.log('firstSegmentarray', antModal.segments[0].point._x)
-                // pathp.push(firstSegment)
+                // antModal = item._children[1]
+                // var firstSegment = []
+                // firstSegment.push(antModal.segments[0].point._x)
+                // firstSegment.push(antModal.segments[0].point._y)
+                // var tx = pathPoints[0]['x'] - firstSegment[0]
+                // var ty = pathPoints[0]['y'] - firstSegment[1]
                 
                 // antModal.fillColor = 'blue'
-                // antModal.visible = false;
+                antModal.visible = true;
+               
                 console.log("children", item._children[1]._children[0])
-                console.log("antmodalfirstseg", antModal.firstSegment)
+                console.log("segments0poingx", antModal.segments[0].point)
+                console.log("antmodalinteriorPoint", antModal.interiorPoint)
+                console.log("antmodalpathdata", antModal.pathData)
                 console.log("childrenlength", item._children.length)
                 console.log('pathpoint', pathPoints)
+                var insidePoint = antModal.interiorPoint
+                var tx = Math.abs(insidePoint.x - pathPoints[0]['x'])
+                var ty = Math.abs(insidePoint.y - pathPoints[0]['y'])
                 // antModal.segments.forEach(function(d){
                 //     // console.log("aaa",d)
                 //  antPoints.push([d.point.x, d.point.y])
                 // })
-
-
+                
                 for(var i = 0; i < pathPoints.length; i++){
                     var pointoridinate = []
-                    pointoridinate.push(Math.abs(pathPoints[i]['x'] - tx))
-                    pointoridinate.push(Math.abs(pathPoints[i]['y'] - ty))
+                    pointoridinate.push(pathPoints[i]['x'])
+                    pointoridinate.push(pathPoints[i]['y'])
                     pathp.push(pointoridinate)
                 }
+
+                var ppppath = new paper.Path(antModal.pathData)
+                ppppath.fillColor = 'blue'
+                ppppath.visible = true;
+                // ppppath._position = new paper.Point(500, 500)
+                ppppath.translate(tx,ty)
+                console.log("ppppaht", ppppath)
+
+
                 
-                antModal.translate(pathp[0][0], pathp[0][1])
+                // for(var i = 0; i < antModal.segments.length; i++){
+                //     var antModalx = antModal.segments[i].point._x
+                //     var antModaly = antModal.segments[i].point._y
+                //     antModal.segments[i].point._x = Math.abs(antModalx - tx)
+                //     antModal.segments[i].point._y = Math.abs(antModalx - ty)
+                // }
+                // antModal.translate(100, 400)
+                // antModal._position = new paper.Point(100, 300)
+
+                // antModal.translate(tx, ty)
                 console.log("pathp", pathp)
-                console.log("antmodal", antModal)
-                firstPointTransform()
+                console.log("antmodallll", antModal)
                 
                 var groupId = "1"
-                console.log('path1', pathp)
                 // pathp = [[3,33],[360,33], [400,100]]
                 // var boundary = [[0,3],[350,3],[350,77],[0,77]]
                 var boundary = [[0,0], [800,0], [800,800], [0,800]]
-                console.log('path2', pathp)
                 var speed = 25
                 var space = 40
-                var color = "#00964e"
+                // var color = "#00964e"
+                var color = "red"
                 MA_Start()
                 // for(var i = 1; i < 3; i++){
                 //     var antModal2 = item._children[i]
                 //     console.log('aaaaa')
                 //     marchingAnt2(antModal2, path, boundary, speed, space, groupId, color)
                 // }
-                marchingAnt2(antModal, pathp, boundary, speed, space, color)
+                // marchingAnt2(antModal, pathp, boundary, speed, space, color)
+                marchingAnt2(ppppath, pathp, boundary, speed, space, color)
                 MA_End()
             })
         }
