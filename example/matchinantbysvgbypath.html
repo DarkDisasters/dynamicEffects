@@ -69,11 +69,11 @@
 
         function addAnttoSvg(){
           
-            // paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
-            paper.project.importSVG('../svg/rightarrow.svg', function(item){
+            paper.project.importSVG("../svg/111.svg", function(item){
+            // paper.project.importSVG('../svg/rightarrow.svg', function(item){
                 console.log("item",item)
 
-                antModal = item._children[1]._children[0]
+                antModal = item._children[1]
                 // antModal = item._children[1]
                 // var firstSegment = []
                 // firstSegment.push(antModal.segments[0].point._x)
@@ -84,7 +84,7 @@
                 // antModal.fillColor = 'blue'
                 antModal.visible = true;
                
-                console.log("children", item._children[1]._children[0])
+                // console.log("children", item._children[1]._children[0])
                 console.log("segments0poingx", antModal.segments[0].point)
                 console.log("antmodalinteriorPoint", antModal.interiorPoint)
                 console.log("antmodalpathdata", antModal.pathData)
@@ -106,7 +106,7 @@
                 }
 
                 var ppppath = new paper.Path(antModal.pathData)
-                ppppath.fillColor = 'blue'
+                ppppath.fillColor = 'red'
                 ppppath.visible = true;
                 // ppppath._position = new paper.Point(500, 500)
                 ppppath.translate(tx,ty)
@@ -134,7 +134,7 @@
                 var speed = 25
                 var space = 40
                 // var color = "#00964e"
-                var color = "red"
+                var color = "yellow"
                 MA_Start()
                 // for(var i = 1; i < 3; i++){
                 //     var antModal2 = item._children[i]

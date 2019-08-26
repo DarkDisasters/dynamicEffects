@@ -67,32 +67,16 @@
             }
         }
 
-        function firstPointTransform(){
-            var firstPathPoint = pathp[0]
-
-        }
-
         function addAnttoSvg(){
 
             // paper.project.importSVG("{{static_url('./svg/111.svg')}}", function(item){
-            paper.project.importSVG('../svg/111.svg', function(item){
+            paper.project.importSVG('../svg/rightarrow.svg', function(item){
                 console.log("item",item)
-                
-                antModal = item._children[1]
-                // antModal = item._children[1]._children[0]
-                var insidePoint = antModal.interiorPoint
-                var firstSegment = []
-                firstSegment.push(antModal.segments[0].point._x)
-                firstSegment.push(antModal.segments[0].point._y)
-                var tx = Math.abs(pathPoints[0]['x'] - insidePoint.x)
-                var ty = Math.abs(pathPoints[0]['y'] - insidePoint.y)
-                console.log('firstSegmentarray', antModal.segments[0].point._x)
-                // pathp.push(firstSegment)
-                
+
+                antModal = item._children[1]._children[0]
                 // antModal.fillColor = 'blue'
                 // antModal.visible = false;
-                // console.log("children", item._children[1]._children[0])
-                console.log("antmodalfirstseg", antModal.firstSegment)
+                console.log("children", item._children)
                 console.log("childrenlength", item._children.length)
                 console.log('pathpoint', pathPoints)
                 // antModal.segments.forEach(function(d){
@@ -100,18 +84,13 @@
                 //  antPoints.push([d.point.x, d.point.y])
                 // })
 
-
                 for(var i = 0; i < pathPoints.length; i++){
                     var pointoridinate = []
-                    pointoridinate.push(Math.abs(pathPoints[i]['x'] - tx))
-                    pointoridinate.push(Math.abs(pathPoints[i]['y'] - ty))
+                    pointoridinate.push(pathPoints[i]['x'])
+                    pointoridinate.push(pathPoints[i]['y'])
                     pathp.push(pointoridinate)
                 }
-                
-                antModal.translate(pathp[0][0], pathp[0][1])
-                console.log("pathp", pathp)
-                console.log("antmodal", antModal)
-                firstPointTransform()
+
                 
                 var groupId = "1"
                 console.log('path1', pathp)
